@@ -3,35 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as mpatches
 
-data1 = pd.read_csv('profiles.csv')
-data2 = pd.read_csv('data/anime-dataset-2026.csv')
+data = pd.read_csv('data/anime-dataset-2026.csv')
 
 def load_frame(data):
     return pd.DataFrame(data)
-_data1 = load_frame(data1)
-_data2 = load_frame(data2)
 
-def favourite_anime():
-    df = _data1.copy()
-    # Extracts birth years from the "birthday" column whose values are >= 1960
-    df['birth_year'] = df['birthday'].str.extract(r'(\d{4})')[0]
-    df['birth_year'] = pd.to_numeric(df['birth_year']).astype('Int64')
-    df = df[df['birth_year'] >= 1960]
+_data = load_frame(data)
+print(_data.columns)
 
-    birthday_counts = df['birth_year'].value_counts().sort_index()
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.bar(birthday_counts.index.astype(int), birthday_counts.values, color="red")
-    ax.set_title("Favourite Animes Listed By Birth Year")
-    ax.set_xlabel("Birth Years")
-    ax.set_ylabel("Amount of Users")
-
-    plt.tight_layout()
-    plt.show()
-    plt.close(fig)
 
 def isekai_lol():
-    isekai = _data2[_data2['Genres'].str.contains('Isekai', na=False)]
+    isekai = _data[_data['Genres'].str.contains('Isekai', na=False)]
     tv_only = isekai.loc[lambda f: f['Type'] == 'TV']
 
     # Include 'Name' (fallback if English name is UNKNOWN) and 'Premiered' (e.g., 'Winter 2025')
@@ -140,5 +122,5 @@ def isekai_lol():
     plt.tight_layout()
     plt.show()
 
-favourite_anime()
+
 isekai_lol()

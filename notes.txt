@@ -1,0 +1,46 @@
+ANIME RENEWAL APPROVAL
+-----------------------------
+An animated series gets approved for another season based on a combination of financial performance, viewership metrics, and strategic backing from a network, streaming service, or production committee.
+
+Key Factors for Renewal
+
+• Profitability and ROI: The network or studio must see that the show makes money or brings in a strong return on investment. For Western shows, this is measured by total viewership, completion rates (how many people finish the season), and subscriber growth. For Japanese anime, renewals depend heavily on the production committee evaluating Blu-ray/DVD sales, merchandise, music sales, and boosted sales of the original manga or light novel.
+• Audience Demographics: The show must hit the right target audience (such as children, young adults, or families) and maintain strong engagement among that group.
+• Cost vs. Value: Animation is expensive and has a long production timeline (often taking many months to a year per episode). If a show is too costly to produce relative to how many people are watching or buying merchandise, it will struggle to get renewed.
+• IP and Multimedia Potential: Shows that sell toys, video games, card games, or drive massive social media hype have a much higher chance of getting a second season because they generate revenue outside of just the screen.
+• Pre-Renewals or Early Greenlights: Occasionally, a network believes so strongly in a project—or wants to keep the animation pipeline from shutting down—that they greenlight multiple seasons before the first season even airs.
+
+===============================================================================
+INITIAL ANIME ADAPTATION FROM MANGA
+------------------------------------
+Turning a manga into an anime is a multi-step business and creative pipeline that transforms static comic panels into a full-motion, voiced, and-scored television series or film.
+
+1. The Greenlight and Production Committee (Kikaku)
+
+• Proposal & Rights: The process usually starts when a publisher (such as Shueisha or Kadokawa) or an animation producer sees a manga’s popularity and approaches the creators or rights holders.
+• The Production Committee (Seisaku Iinkai): Unlike Western shows backed by a single studio or network, Japanese anime is almost always funded by a temporary alliance of companies—including toy makers, music labels, streaming platforms, and publishers. They pool money to share financial risk and divide up merchandise or broadcasting rights.
+• Studio Selection: The committee hires an animation studio (e.g., MAPPA, Toei Animation, or Kyoto Animation) to execute the physical production.
+
+2. Pre-Production (Planning and Design)
+
+• Scriptwriting (Scenario): A head writer and the director adapt the manga's chapters into a season or episode structure. They decide what to cut, how to pace the story, and where to add original content or "filler".
+• Character & Setting Design: Character designers take the manga artist’s style and redraw the characters in a simplified model sheet (Settei) so hundreds of different animators can draw them consistently across episodes.
+• Storyboarding (Eikonto): The director maps out every scene, camera angle, cut, and timing in visual storyboard form.
+
+3. Production (Animation and Art)
+
+• Key Animation (Genga): Skilled animators draw the major, defining poses and expression changes of a sequence.
+• In-Between Animation (Douga): Other artists draw the intermediate frames that fill the gap between key poses to create the illusion of smooth motion.
+• Coloring & Digital Painting: Artists digitally paint the line art and apply shadows and highlights based on predefined color guides.
+• Background Art: Background painters create detailed environments (skies, rooms, streets) that match the mood of each scene.
+• Compositing: All the moving character layers, background art, lighting effects, and camera movements are merged together using software like After Effects or Nuke.
+
+4. Audio Production
+
+• Voice Acting (Atefuri / Seiyuu): Voice actors record their lines in a studio while watching the animation reels, guided closely by the sound director.
+• Music & Sound Effects (Foley): A composer writes an original orchestral or rock score, and sound designers layer in footsteps, wind, punches, and ambient noises.
+
+5. Post-Production and Release
+
+• Editing & Final Mix: The dialogue, sound effects, music, and visuals are synced up and cut to final broadcast length.
+• Distribution: The completed episodes are delivered to television networks or global streaming platforms (like Crunchyroll or Netflix) for worldwide release.

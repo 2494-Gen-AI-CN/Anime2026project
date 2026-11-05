@@ -1,3 +1,15 @@
+==========================================================================
+MY OWN HANDWRITTEN NOTES
+==========================================================================
+- First we searched what manga that were not adapted into the anime yet
+- Then we tried to find data for merchandises on famous manga
+- Then we tried searching for trending manga (2026)
+- Then we scrape for sales numbers of the trending manga
+
+
+==========================================================================
+GOOGLE SEARCH NOTES
+==========================================================================
 ANIME RENEWAL APPROVAL
 -----------------------------
 An animated series gets approved for another season based on a combination of financial performance, viewership metrics, and strategic backing from a network, streaming service, or production committee.
@@ -44,3 +56,4 @@ Turning a manga into an anime is a multi-step business and creative pipeline tha
 
 • Editing & Final Mix: The dialogue, sound effects, music, and visuals are synced up and cut to final broadcast length.
 • Distribution: The completed episodes are delivered to television networks or global streaming platforms (like Crunchyroll or Netflix) for worldwide release.
+===================================

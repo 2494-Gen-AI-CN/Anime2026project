@@ -1,2 +1,7 @@
 pandas~=3.0.6
 matplotlib~=3.11.2
+mysql-connector-python==26.7.0
+google-cloud-bigquery
+db-dtypes
+python-dotenv
+pytest

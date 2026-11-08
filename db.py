@@ -65,7 +65,3 @@ class Client:
     #         writer.writeheader()
     #         writer.writerows(rows)
 
-
-
-
-

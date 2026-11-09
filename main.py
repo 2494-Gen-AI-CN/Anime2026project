@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.patches as mpatches
 
-data = pd.read_csv('data/anime-dataset-2026.csv')
+data = pd.read_csv('data/manga_dataset.csv')
 
 def load_frame(data):
     return pd.DataFrame(data)
@@ -123,4 +123,4 @@ def isekai_lol():
     plt.show()
 
 
-isekai_lol()
+#isekai_lol()

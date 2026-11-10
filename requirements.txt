@@ -5,3 +5,4 @@ google-cloud-bigquery
 db-dtypes
 python-dotenv
 pytest
+scikit-learn

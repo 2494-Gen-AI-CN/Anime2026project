@@ -9,7 +9,7 @@ load_dotenv()
 client = client("anime_dw")
 
 client.load_staging_data()
-
+client.init_star_schema()
 client.transform_data()
 
 

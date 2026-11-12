@@ -206,7 +206,7 @@ GROUP BY a.title, a.studio_name;
 --              themes,demographics,synopsis,image_url
 -- ============================================================================
 CREATE OR REPLACE TABLE `{project_id}.{dataset}.dim_author` AS
-SELECT
+SELECT DISTINCT
   FARM_FINGERPRINT(CONCAT(UPPER(TRIM(title)), '|', UPPER(TRIM(authors)))) AS author_id,
   TRIM(title) AS title,
   TRIM(authors) AS author_name,
@@ -214,8 +214,7 @@ SELECT
 FROM `{project_id}.anime_staging.manga_dataset`
 WHERE title IS NOT NULL
   AND authors IS NOT NULL
-  AND TRIM(authors) != ''
-GROUP BY TRIM(title), TRIM(authors);
+  AND TRIM(authors) != '';
 
 
 -- ============================================================================

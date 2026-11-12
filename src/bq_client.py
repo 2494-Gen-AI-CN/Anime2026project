@@ -9,7 +9,7 @@ load_dotenv()
 
 cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 class Bq:
-    def __init__(self,dataset : str | None, location : str | None = "northamerica-northeast2"):
+    def __init__(self,dataset : str | None, location : str | None = "US"):
         self.__bq_client = bigquery.Client()
         self.__data_path = Path("../data")
         self.__staging_dataset = "anime_staging"
@@ -76,7 +76,10 @@ class Bq:
         job.result()
         self.logger.info(f"Finished Executing {file_path}")
         return job
-
+    def init_star_schema(self):
+        star_dataset = f"{self.__bq_client.project}.{self.__dataset_id}"
+        self.__bq_client.create_dataset(star_dataset, exists_ok=True)
+        self.read_sql("../sql/create_star_schema.sql")
     def transform_data(self):
         self.read_sql("../sql/transform.sql")
 

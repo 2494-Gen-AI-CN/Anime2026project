@@ -15,7 +15,7 @@
         SELECT
             en_title,
             title AS romaji_title,
-            MIN(SAFE_CAST(REGEXP_EXTRACT(aired, r'(\d{4})') AS INT64)) AS first_air_year
+            MIN(SAFE_CAST(REGEXP_EXTRACT(aired, r'(\d{{4}})') AS INT64)) AS first_air_year
         FROM `{project_id}.{dataset}.dim_anime`
         WHERE type IN ('TV', 'ONA')
         GROUP BY en_title, romaji_title

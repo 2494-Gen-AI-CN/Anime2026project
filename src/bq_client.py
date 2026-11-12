@@ -8,8 +8,8 @@ import logging as log
 load_dotenv()
 
 cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-class Client:
-    def __init__(self,dataset : str, location : str | None = "northamerica-northeast2"):
+class Bq:
+    def __init__(self,dataset : str | None, location : str | None = "northamerica-northeast2"):
         self.__bq_client = bigquery.Client()
         self.__data_path = Path("../data")
         self.__dataset_id = dataset or "anime_dw"
@@ -28,7 +28,6 @@ class Client:
         return file_path.stem.replace("-","_").replace(" ","_")
 
     def load_staging_data(self):
-
         for file_path in sorted(self.__data_path.glob("**/*.*")):
             loaded_tables: dict[str, Path] = {}
             config = None
@@ -76,4 +75,8 @@ class Client:
         job.result()
         self.logger.info(f"Finished Executing {file_path}")
         return job
+
+    def transform_data(self):
+        self.read_sql("../sql/transform.sql")
+
 

@@ -10,7 +10,7 @@ import lxml as lx
 from bs4 import BeautifulSoup
 
 
-df = pd.read_csv("data/manga_dataset.csv")
+df = pd.read_csv("../data/manga_dataset.csv")
 
 
 def get_media_type(url: str) -> str:

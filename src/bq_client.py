@@ -9,18 +9,22 @@ load_dotenv()
 
 cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 class Bq:
-    def __init__(self,dataset : str | None, location : str | None = "northamerica-northeast2"):
-        self.__bq_client = bigquery.Client()
+    def __init__(self, dataset: str | None, location: str | None = None):
+        self.__location = location or "northamerica-northeast2"
+        self.__bq_client = bigquery.Client(location=self.__location)  # default for every job
         self.__data_path = Path("../data")
         self.__staging_dataset = "anime_staging"
         self.__dataset_id = dataset or "anime_dw"
-        self.__location = location
         self.logger = log.getLogger(__name__)
-        # self.logger.setLevel(level=log.INFO)
-        self.logger.info('Initializing BigQuery client')
+        self.logger.info("Initializing BigQuery client")
 
-        self.dataset_ref = f"{self.__bq_client.project}.{self.__staging_dataset}"
-        self.__bq_client.create_dataset(self.dataset_ref, exists_ok=True)
+        self._ensure_dataset(self.__staging_dataset)
+        self._ensure_dataset(self.__dataset_id)
+
+    def _ensure_dataset(self, dataset_id: str):
+        ds = bigquery.Dataset(f"{self.__bq_client.project}.{dataset_id}")
+        ds.location = self.__location
+        return self.__bq_client.create_dataset(ds, exists_ok=True)
     def get_client(self):
         return self.__bq_client
 
@@ -62,7 +66,7 @@ class Bq:
                     continue
 
             table_name = self.table_name_from_path(file_path)
-            table_ref = f"{self.__bq_client.project}.{self.__staging_dataset}.{table_name}"
+            table_ref = f"{self.__bq_client.project}.anime_staging.{table_name}"
             with file_path.open("rb") as f:
                 job = self.__bq_client.load_table_from_file(f, table_ref, job_config=config)
                 job.result()
@@ -79,5 +83,10 @@ class Bq:
 
     def transform_data(self):
         self.read_sql("../sql/transform.sql")
+
+    def init_star_schema(self):
+        star_dataset = f"{self.__bq_client.project}.{self.__dataset_id}"
+        self.__bq_client.create_dataset(star_dataset, exists_ok=True)
+        self.read_sql("../sql/create_star_schema.sql")    
 
 

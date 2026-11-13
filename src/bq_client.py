@@ -79,6 +79,22 @@ def clean_and_split_rejects(
 
 
 class Bq:
+    def __init__(self, dataset: str | None, location: str | None = None):
+        self.__location = location or "northamerica-northeast2"
+        self.__bq_client = bigquery.Client(location=self.__location)  # default for every job
+        self.__data_path = Path("../data")
+        self.__staging_dataset = "anime_staging"
+        self.__dataset_id = dataset or "anime_dw"
+        self.logger = log.getLogger(__name__)
+        self.logger.info("Initializing BigQuery client")
+
+        self._ensure_dataset(self.__staging_dataset)
+        self._ensure_dataset(self.__dataset_id)
+
+    def _ensure_dataset(self, dataset_id: str):
+        ds = bigquery.Dataset(f"{self.__bq_client.project}.{dataset_id}")
+        ds.location = self.__location
+        return self.__bq_client.create_dataset(ds, exists_ok=True)
     def __init__(self, dataset: str | None = None, location: str | None = "US"):
         self.logger = PipelineLogger.get_logger()
         self.__bq_client = bigquery.Client()
@@ -141,6 +157,15 @@ class Bq:
                 continue
 
             table_name = self.table_name_from_path(file_path)
+            table_ref = f"{self.__bq_client.project}.anime_staging.{table_name}"
+            with file_path.open("rb") as f:
+                job = self.__bq_client.load_table_from_file(f, table_ref, job_config=config)
+                job.result()
+            loaded_tables[table_name] = file_path
+        return None
+
+    def read_sql(self,file_path : str):
+        with open(file_path, "r", encoding="utf-8") as f:
             file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
 
             if self._already_loaded(table_name, file_hash):
@@ -207,3 +232,10 @@ class Bq:
 
     def transform_data(self):
         self.read_sql("../sql/transform.sql")
+
+    def init_star_schema(self):
+        star_dataset = f"{self.__bq_client.project}.{self.__dataset_id}"
+        self.__bq_client.create_dataset(star_dataset, exists_ok=True)
+        self.read_sql("../sql/create_star_schema.sql")    
+
+

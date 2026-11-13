@@ -34,7 +34,11 @@ projects/P0/
 ├── src/
 │   ├── bq_client.py           # Config-driven pandas cleaning & BigQuery staging loader
     ├── adaptation_greenlight.py           # Projected Sales for unadapted series by using ML
-    ├── main.py           
+    ├── main.py
+    ├── etl_and_analysis.py
+    ├── plot_lifecycle.py
+    ├── plot_q2.py
+    ├── q2_audience_rentention.py           
 │   └── sales_extract.py       # Mangacodex.com web scraper (Warning: Don't execute this. Extraction time took 17+ hours)
 
 ├── tests/
@@ -43,11 +47,31 @@ projects/P0/
 │   ├── create_star_schema.sql
 │   ├── adaptation_greenlight.sql
 │   ├── anime_halo.sql
-│   ├── transform.sql # Transformation Logic pulled from anime staging dataset
-│   └──04_scd2_lifecycle_history.sql
+|   ├── 01_build_star_schema.sql
+│   ├── adaptation_advantage.sql
+|   ├── 01_build_star_schema.sql
+|   ├── 01_schema.sql
+|   ├── 02_analysis.sql
+|   ├── 02_q2_cohort_view.sql
+|   ├── 03_q2a_correlation.sql
+|   ├── 04_q2b_audience_tiers.sql
+|   ├── 05_q2c_genre_abandonment.sql
+│   └── transform.sql # Transformation Logic pulled from anime staging dataset
+│   
 ├── artifacts/
 │   ├── star_schema.png        # Warehouse entity-relationship diagram
-│   ├── sample_load_log.csv    # Sample output of the idempotent load log
+│   ├── lifecycle_scatter.png
+|   ├── q2_genre_abandoment.png
+|   ├── q2_hype_gap.png
+|   ├── q2_hype_vs_satisfaction.png
+|   ├── q2a_correlation.csv
+|   ├── q2b_audience_tiers.csv
+|   ├── q2c_genre_abandonment.csv
+|   ├── anime-dataset-2026.csv
+|   ├── manga_dataset.csv
+|   ├── series_sales_v2.csv
+|   ├── series_sales.csv
+    ├── sample_load_log.csv    # Sample output of the idempotent load log
 │   ├── sample_rejects.csv     # Sample output of rejected records with failure reasons
 │   └── charts/                # Client-facing Matplotlib visualizations
 └── slides/

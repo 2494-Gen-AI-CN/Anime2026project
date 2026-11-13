@@ -18,28 +18,33 @@ To guide next year's investment slate, this warehouse answers five core business
 * **Dataset Source:** 
   * [Manga (Download the Manga Dataset)](https://www.kaggle.com/datasets/patelris/anime-and-mang"a-dataset-2026)
   * [Anime](https://www.kaggle.com/datasets/darkbarrierhub/anime-dataset-2026)
-  * Scraped Sales Data from [MangaCodex](https://mangacodex.com), series_sale.csv
+  * Scraped Sales Data from [MangaCodex](https://mangacodex.com), series_sale.csv & series_sale_v2.csv
 * **Partner Repository:** 
   * [Paul Ly](https://github.com/2494-Gen-AI-CN/PaulLy)
   * [David Luu](https://github.com/2494-Gen-AI-CN/David_Luu)
+
+## Quick Start
+Folder Structure
 ```text
 projects/P0/
-├── README.md                  # Business case, architecture, and runbook
-├── credentials/               # Ingestion configuration (raw files, formats, BigQuery targets)
+├── README.md                  
+├── credentials/               
 │   ├── your_bq_credentials.json
 ├── requirements.txt           # Python dependencies
 ├── src/
-│   ├── ingest.py              # Config-driven pandas cleaning & BigQuery staging loader
-│   └── transform.py           # Pure pandas validation, cleansing, and feature engineering
+│   ├── bq_client.py           # Config-driven pandas cleaning & BigQuery staging loader
+    ├── adaptation_greenlight.py           # Projected Sales for unadapted series by using ML
+    ├── main.py           
+│   └── sales_extract.py       # Mangacodex.com web scraper (Warning: Don't execute this. Extraction time took 17+ hours)
+
 ├── tests/
-│   └── test_transform.py      # Offline pytest suite for cleaning & transformation logic
+│   └── test_logging_and_ingest.py      # Offline pytest suite for cleaning & transformation logic
 ├── sql/
-│   ├── 00_build_star_schema.sql
-│   ├── 01_adaptation_advantage.sql
-│   ├── 02_hype_vs_retention_correlation.sql
-│   ├── 03_greenlight_formula.sql
-│   ├── 04_scd2_lifecycle_history.sql
-│   └── 05_sequel_greenlight_candidates.sql
+│   ├── create_star_schema.sql
+│   ├── adaptation_greenlight.sql
+│   ├── anime_halo.sql
+│   ├── transform.sql # Transformation Logic pulled from anime staging dataset
+│   └──04_scd2_lifecycle_history.sql
 ├── artifacts/
 │   ├── star_schema.png        # Warehouse entity-relationship diagram
 │   ├── sample_load_log.csv    # Sample output of the idempotent load log
@@ -47,3 +52,16 @@ projects/P0/
 │   └── charts/                # Client-facing Matplotlib visualizations
 └── slides/
     └── presentation_deck.pdf  # Client showcase presentation
+```
+Create your own service key at [Google Cloud console](https://console.cloud.google.com)
+
+IAM & Admin  → Create service account  → Download `your-service-key.json` → place it in `credentials` folder
+
+Set these values in your private `.env` file:
+
+| Variable | Purpose |
+| --- | --- |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Your service key needed to connect to Google BigQuery |
+
+Add credentials to `.gitignore` file
+

@@ -1,22 +1,19 @@
-import logging
-
 from dotenv import load_dotenv
-from google.cloud import bigquery
 from adaptation_greenlight import DataViz
-from bq_client import Bq as client
+from bq_client import Bq
+from logger import PipelineLogger
 
 load_dotenv()
+log = PipelineLogger.get_logger()
 
-client = client("anime_dw")
+log.info("Starting Anime2026 warehouse & visualization pipeline")
+client = Bq("anime_dw")
 
 # client.load_staging_data()
 # client.init_star_schema()
 # client.transform_data()
 
 data_viz = DataViz(client)
-data_viz.visualize()
-
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
-
+data_viz.visualize_top_10()
+data_viz.visualize_halo()
+log.info("Pipeline completed successfully")

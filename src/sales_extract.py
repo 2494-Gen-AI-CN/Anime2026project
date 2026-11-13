@@ -1,5 +1,4 @@
 import csv
-import logging as log
 import time
 import re
 from pathlib import Path
@@ -9,8 +8,9 @@ import requests as rq
 import lxml as lx
 from bs4 import BeautifulSoup
 
+from logger import PipelineLogger
 
-df = pd.read_csv("../data/manga_dataset.csv")
+logger = PipelineLogger.get_logger()
 
 
 def get_media_type(url: str) -> str:
@@ -39,7 +39,7 @@ def extract_series_sales(session, slug: str) -> list[dict]:
             jp_title = soup.find("p", class_="manga-header__title-jp").get_text(strip=True)
         except AttributeError:
             jp_title = None
-            log.info("No JP Title Found")
+            logger.debug("No JP title found for %s (%s)", title, target_url)
 
         media_type = get_media_type(target_url)
 
@@ -130,10 +130,13 @@ def write_series_csv(
     slug = re.sub(r"[^a-zA-Z0-9\s-]", "", str(title).lower())
     slug = re.sub(r"[\s-]+", "-", slug).strip("-")
     if not slug:
+        logger.warning("Skipping title with empty URL slug: %s", title)
         return 0
 
-    series_row = transform_sales(extract_series_sales(session, slug), start_idx=start_idx)
+    raw_rows = extract_series_sales(session, slug)
+    series_row = transform_sales(raw_rows, start_idx=start_idx)
     if not series_row:
+        logger.debug("No sales rows found for %s (slug=%s)", title, slug)
         return 0
 
     file_path = Path(path)
@@ -146,19 +149,25 @@ def write_series_csv(
             writer.writerow(header)
         writer.writerows(series_row)
 
+    logger.info("Saved %d sales rows for %s -> %s", len(series_row), title, file_path)
     return len(series_row)
 
 
 if __name__ == "__main__":
+    manga_csv = Path("../data/manga_dataset.csv")
+    if not manga_csv.exists():
+        manga_csv = Path(__file__).resolve().parent.parent / "data" / "manga_dataset.csv"
+    df = pd.read_csv(manga_csv)
+    logger.info("Starting MangaCodex sales extraction for %d unique titles", df["title"].nunique())
     with rq.Session() as session:
         session.headers.update({
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0"
         })
         next_id = 1
         for title in df["title"].dropna().unique():
-            print(f"Processing {title}")
+            logger.info("Processing %s", title)
             added = write_series_csv(session, title, start_idx=next_id)
             if added > 0:
-                print(f"Saved {added} rows! (next_id {next_id + added})")
+                logger.info("Saved %d rows for %s (next_id=%d)", added, title, next_id + added)
             next_id += added
             time.sleep(0.5)

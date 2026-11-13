@@ -69,7 +69,6 @@ class DataViz:
         return self.model
 
     def predict_greenlight(self):
-
         X_cand = self.candidate_df[self.features]
         pred_log_growth = self.model.predict(X_cand)
         low,high = np.percentile(self.loo_residuals,[10,90])
@@ -81,6 +80,7 @@ class DataViz:
         self.candidate_df["projected_low"] = self.candidate_df["latest_baseline_sales"] * self.candidate_df["growth_low_x"]
         self.candidate_df["projected_high"] = self.candidate_df["latest_baseline_sales"] * self.candidate_df["growth_high_x"]
         self.candidate_df = self.candidate_df.sort_values("projected_sales", ascending=False)
+        logger.info("Scored %d greenlight candidate series", len(self.candidate_df))
         return self.candidate_df
 
     def visualize_top_10(self):
@@ -92,6 +92,7 @@ class DataViz:
             .drop_duplicates(subset=["title"])
             .head(10)
         )
+        logger.info("Rendering Top 10 greenlight chart (%d series)", len(top10))
 
         titles = top10["title"]
         baseline = top10["latest_baseline_sales"]
@@ -120,6 +121,7 @@ class DataViz:
 
     def visualize_halo(self):
         df = self.fetch_dataset("../sql/anime_halo.sql")
+        logger.info("Rendering anime halo chart (%d series)", len(df))
         df[["sales_before", "sales_during", "sales_after"]] = df[
             ["sales_before", "sales_during", "sales_after"]
         ].fillna(0)

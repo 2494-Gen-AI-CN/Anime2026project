@@ -157,15 +157,6 @@ class Bq:
                 continue
 
             table_name = self.table_name_from_path(file_path)
-            table_ref = f"{self.__bq_client.project}.anime_staging.{table_name}"
-            with file_path.open("rb") as f:
-                job = self.__bq_client.load_table_from_file(f, table_ref, job_config=config)
-                job.result()
-            loaded_tables[table_name] = file_path
-        return None
-
-    def read_sql(self,file_path : str):
-        with open(file_path, "r", encoding="utf-8") as f:
             file_hash = hashlib.sha256(file_path.read_bytes()).hexdigest()[:16]
 
             if self._already_loaded(table_name, file_hash):

@@ -12,6 +12,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from logger import PipelineLogger
+
+logger = PipelineLogger.get_logger()
+
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 OUT_DIR = BASE_DIR / "output"
@@ -38,6 +42,7 @@ def load_cohort() -> pd.DataFrame:
         & (df["Members"] > 0)
     ].copy()
     cohort["abandonment"] = 1 - cohort["Scored By"] / cohort["Members"]
+    logger.info("Loaded Q2 cohort from %s (%d rows)", RAW_CSV.name, len(cohort))
     return cohort
 
 
@@ -79,7 +84,9 @@ def chart_hype_vs_satisfaction(cohort: pd.DataFrame, tiers: pd.DataFrame) -> Non
     ax2.set_title("Abandonment falls, scores rise with audience size")
 
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "q2_hype_vs_satisfaction.png", dpi=150)
+    out_file = OUT_DIR / "q2_hype_vs_satisfaction.png"
+    fig.savefig(out_file, dpi=150)
+    logger.info("Saved chart %s", out_file)
 
 
 def chart_genre_abandonment(genres: pd.DataFrame, top_n: int = 10) -> None:
@@ -97,7 +104,9 @@ def chart_genre_abandonment(genres: pd.DataFrame, top_n: int = 10) -> None:
     ax.set_xlabel("Abandonment vs. same-size audiences (percentage points; + = loses more viewers)")
     ax.set_title(f"Genres that lose / keep viewers (size-adjusted, top & bottom {top_n})")
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "q2_genre_abandonment.png", dpi=150)
+    out_file = OUT_DIR / "q2_genre_abandonment.png"
+    fig.savefig(out_file, dpi=150)
+    logger.info("Saved chart %s", out_file)
 
 
 def chart_hype_gap(genres: pd.DataFrame) -> None:
@@ -126,7 +135,9 @@ def chart_hype_gap(genres: pd.DataFrame) -> None:
     ax.set_ylabel("Size-adjusted abandonment (pp)   <- retains | loses viewers ->")
     ax.set_title("Hype vs. retention by genre (bubble size = number of titles)")
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "q2_hype_gap.png", dpi=150)
+    out_file = OUT_DIR / "q2_hype_gap.png"
+    fig.savefig(out_file, dpi=150)
+    logger.info("Saved chart %s", out_file)
 
 
 # ---------------------------------------------------------------- main
@@ -138,7 +149,7 @@ def main(show: bool = True) -> None:
     chart_hype_vs_satisfaction(cohort, tiers)
     chart_genre_abandonment(genres)
     chart_hype_gap(genres)
-    print(f"Saved 3 charts to {OUT_DIR}")
+    logger.info("Saved 3 Q2 charts to %s", OUT_DIR)
     if show:
         plt.show()
     else:

@@ -13,6 +13,7 @@ Setup:
   pip install google-cloud-bigquery db-dtypes pandas matplotlib python-dotenv
   .env  ->  GOOGLE_APPLICATION_CREDENTIALS=credentials/<your-key>.json
 """
+import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -21,12 +22,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from google.cloud import bigquery
 
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
+from logger import PipelineLogger
 
 load_dotenv()
+logger = PipelineLogger.get_logger()
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -81,18 +80,24 @@ def _read_sql(filename: str) -> str:
 
 def run_ddl(filename: str) -> None:
     """Run a .sql file that only creates tables/views (may hold several statements)."""
+    logger.info("Executing DDL %s", filename)
     client.query(_read_sql(filename)).result()
+    logger.info("Finished DDL %s", filename)
 
 
 def run_sql(filename: str) -> pd.DataFrame:
     """Run a SELECT .sql file and return a DataFrame."""
-    return client.query(_read_sql(filename)).to_dataframe()
+    logger.info("Running analysis query %s", filename)
+    df = client.query(_read_sql(filename)).to_dataframe()
+    logger.info("Query %s returned %d rows", filename, len(df))
+    return df
 
 
 def ensure_dataset() -> None:
     ds = bigquery.Dataset(f"{PROJECT}.{DATASET}")
     ds.location = LOCATION
     client.create_dataset(ds, exists_ok=True)
+    logger.info("Ensured BigQuery dataset %s.%s (location=%s)", PROJECT, DATASET, LOCATION)
 
 
 def load_csv_to_staging() -> None:
@@ -108,7 +113,8 @@ def load_csv_to_staging() -> None:
     table_id = f"{PROJECT}.{DATASET}.{STAGING_TABLE}"
     with open(CSV, "rb") as f:
         client.load_table_from_file(f, table_id, job_config=job_config).result()
-    print(f"Loaded {client.get_table(table_id).num_rows:,} rows into {table_id}")
+    row_count = client.get_table(table_id).num_rows
+    logger.info("Loaded %s rows into %s", f"{row_count:,}", table_id)
 
 
 # ---------------------------------------------------------------- charts
@@ -134,7 +140,9 @@ def plot_scatter_and_tiers(tiers: pd.DataFrame) -> None:
     ax2.set_ylabel("Avg abandonment proxy (1 - scored_by / members)")
     ax2.set_title("Abandonment falls as audience grows")
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "q2_hype_vs_satisfaction.png", dpi=150)
+    out_file = OUT_DIR / "q2_hype_vs_satisfaction.png"
+    fig.savefig(out_file, dpi=150)
+    logger.info("Saved chart %s", out_file)
     plt.close(fig)
 
 
@@ -150,12 +158,15 @@ def plot_genres(genres: pd.DataFrame, top_n: int = 12) -> None:
     ax.set_xlabel("Abandonment vs. same-size audiences (positive = loses more viewers)")
     ax.set_title("Size-adjusted viewer abandonment by genre (genres with 30+ titles)")
     fig.tight_layout()
-    fig.savefig(OUT_DIR / "q2_genre_abandonment.png", dpi=150)
+    out_file = OUT_DIR / "q2_genre_abandonment.png"
+    fig.savefig(out_file, dpi=150)
+    logger.info("Saved chart %s", out_file)
     plt.close(fig)
 
 
 # ---------------------------------------------------------------- main
 def main() -> None:
+    logger.info("Starting Q2 audience retention pipeline")
     ensure_dataset()
     load_csv_to_staging()                      # 1. CSV -> staging
     run_ddl("01_build_star_schema.sql")        # 2. staging -> dim_anime, dim_genre
@@ -180,7 +191,7 @@ def main() -> None:
 
     plot_scatter_and_tiers(tiers)
     plot_genres(genres)
-    print(f"\nSaved CSVs and charts to {OUT_DIR}")
+    logger.info("Saved Q2 CSVs and charts to %s", OUT_DIR)
 
 
 if __name__ == "__main__":

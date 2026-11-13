@@ -12,6 +12,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from logger import PipelineLogger
+
+logger = PipelineLogger.get_logger()
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent   # Anime2026project/ (this file lives in src/)
 CSV = PROJECT_ROOT / "data" / "anime-dataset-2026.csv"
 SNAPSHOT = pd.Timestamp("2026-06-30")
@@ -37,6 +41,7 @@ def load_raw() -> pd.DataFrame:
     parse = lambda x: pd.to_datetime(x, errors="coerce", format="mixed") if isinstance(x, str) and x.strip() != "?" else pd.NaT
     df["aired_start"] = parts[0].map(parse)
     df["aired_end"] = parts[1].map(parse)
+    logger.info("Loaded raw CSV %s (%d rows)", CSV.name, len(df))
     return df
 
 
@@ -171,6 +176,7 @@ def engagement_view(fact, dim_anime, media):
 
 
 def run_local_analysis(fact, dim_anime, media, studio, status_scd2, tier_scd2):
+    logger.info("Running local SCD2 & lifecycle analysis")
     e = engagement_view(fact, dim_anime, media)
     cur = status_scd2[status_scd2.is_current][["anime_id", "status", "valid_from"]]
     e = e.merge(cur, on="anime_id")
@@ -222,12 +228,13 @@ def load_to_bigquery(project, tables, dataset="anime_dw"):
         for c in frame.select_dtypes(include=["datetime64[ns]", "datetime64[us]", "datetime64[s]"]).columns:
             frame[c] = frame[c].dt.date                       # BigQuery DATE (9999-12-31 is valid)
         client.load_table_from_dataframe(frame, f"{project}.{dataset}.{name}", job_config=cfg).result()
-        print(f"loaded {name}: {len(frame):,} rows")
+        logger.info("Loaded %s.%s.%s (%s rows)", project, dataset, name, f"{len(frame):,}")
 
 
 def run_pipeline(bq_project=None, analyze=True):
     """Build the star schema + SCD2 tables from the CSV. Optionally load them to BigQuery and print the analysis.
     Returns every table (plus the cleaned raw frame) in a dict so callers can reuse them."""
+    logger.info("Starting ETL & SCD2 pipeline (bq_project=%s, analyze=%s)", bq_project, analyze)
     raw = load_raw()
     dim_anime = build_dim_anime(raw)
     media = build_dim_media_format(raw)
@@ -238,8 +245,15 @@ def run_pipeline(bq_project=None, analyze=True):
     status_scd2 = build_status_scd2(raw)
     tier_scd2 = build_studio_tier_scd2(studio, fact)
 
-    print(f"dim_anime {len(dim_anime):,} | studios {len(studio):,} | genres {len(genre):,} | "
-          f"fact {len(fact):,} | status SCD2 {len(status_scd2):,} | tier SCD2 {len(tier_scd2):,}")
+    logger.info(
+        "Built tables: dim_anime=%s | studios=%s | genres=%s | fact=%s | status_scd2=%s | tier_scd2=%s",
+        f"{len(dim_anime):,}",
+        f"{len(studio):,}",
+        f"{len(genre):,}",
+        f"{len(fact):,}",
+        f"{len(status_scd2):,}",
+        f"{len(tier_scd2):,}",
+    )
 
     tables = {
         "dim_anime": dim_anime, "dim_studio_publisher": studio, "dim_author": build_dim_author(),

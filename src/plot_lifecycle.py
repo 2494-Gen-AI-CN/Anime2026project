@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from etl_and_analysis import load_raw, MIN_VOTES, PROJECT_ROOT
+from logger import PipelineLogger
+
+logger = PipelineLogger.get_logger()
 
 COLORS = {"Currently Airing": "#e4572e", "Finished Airing": "#2e6fe4"}
 OUTPUT_DIR = PROJECT_ROOT / "outputs"          # change if you want the PNG somewhere else
@@ -14,6 +17,7 @@ def make_plot(raw=None, out_path=None, show=False):
     df = load_raw() if raw is None else raw
     df = df[df.status.isin(COLORS) & (df.scored_by >= MIN_VOTES) & df.score.notna() & (df.members > 0)].copy()
     df["log_members"] = np.log10(df.members)
+    logger.info("Plotting lifecycle scatter (%d titles)", len(df))
 
     fig, ax = plt.subplots(figsize=(11, 7))
     for status, color in COLORS.items():
@@ -43,7 +47,7 @@ def make_plot(raw=None, out_path=None, show=False):
     out_path = Path(out_path) if out_path else OUTPUT_DIR / "lifecycle_scatter.png"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=200)
-    print(f"saved {out_path}")
+    logger.info("Saved lifecycle scatter chart to %s", out_path)
     if show:
         plt.show()
     return out_path

@@ -221,6 +221,16 @@ SELECT
   author_name,
   'Story & Art' AS role
 FROM authors_clean;
+=======
+SELECT DISTINCT
+  FARM_FINGERPRINT(CONCAT(UPPER(TRIM(title)), '|', UPPER(TRIM(authors)))) AS author_id,
+  TRIM(title) AS title,
+  TRIM(authors) AS author_name,
+  'Story & Art' AS role
+FROM `{project_id}.anime_staging.manga_dataset`
+WHERE title IS NOT NULL
+  AND authors IS NOT NULL
+  AND TRIM(authors) != '';
 
 
 -- ============================================================================

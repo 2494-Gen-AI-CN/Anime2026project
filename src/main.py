@@ -1,5 +1,3 @@
-import logging
-
 from dotenv import load_dotenv
 
 from bq_client import Bq
@@ -7,8 +5,12 @@ from etl_and_analysis import run_pipeline
 from plot_lifecycle import make_plot
 from q2_audience_retention import main as run_q2_pipeline   # CSV -> BigQuery -> Q2 results
 from plot_q2 import main as make_q2_plots                   # Q2 charts
+from adaptation_greenlight import DataViz
+from bq_client import Bq
+from logger import PipelineLogger
 
 load_dotenv()
+log = PipelineLogger.get_logger()
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
@@ -42,3 +44,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+log.info("Starting Anime2026 warehouse & visualization pipeline")
+client = Bq("anime_dw")
+
+# client.load_staging_data()
+# client.init_star_schema()
+# client.transform_data()
+
+data_viz = DataViz(client)
+data_viz.visualize_top_10()
+data_viz.visualize_halo()
+log.info("Pipeline completed successfully")

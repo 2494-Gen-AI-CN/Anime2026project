@@ -1,5 +1,4 @@
-CREATE SCHEMA IF NOT EXISTS `{project_id}.{dataset}`
-OPTIONS(location="northamerica-northeast2");
+CREATE SCHEMA IF NOT EXISTS `{project_id}.{dataset}`;
 
 CREATE TABLE IF NOT EXISTS `{project_id}.{dataset}.dim_anime`(
     anime_id INT64 NOT NULL,
